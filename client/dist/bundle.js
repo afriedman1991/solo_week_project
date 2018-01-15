@@ -954,6 +954,10 @@ var _Messages = __webpack_require__(27);
 
 var _Messages2 = _interopRequireDefault(_Messages);
 
+var _UserTyping = __webpack_require__(31);
+
+var _UserTyping2 = _interopRequireDefault(_UserTyping);
+
 var _socketIo = __webpack_require__(29);
 
 var _socketIo2 = _interopRequireDefault(_socketIo);
@@ -980,9 +984,11 @@ var App = function (_React$Component) {
 
     _this.state = {
       messages: [],
-      userMessage: ''
+      userMessage: '',
+      isTyping: false
     };
     _this.handleClick = _this.handleClick.bind(_this);
+    _this.isTyping = _this.isTyping.bind(_this);
     return _this;
   }
 
@@ -1006,10 +1012,24 @@ var App = function (_React$Component) {
     value: function handleClick(e) {
       var socket = (0, _socketIo2.default)();
       this.setState({
-        userMessage: (0, _jquery2.default)('#m').val()
+        userMessage: (0, _jquery2.default)('#m').val(),
+        isTyping: false
       });
       socket.emit('chat message', (0, _jquery2.default)('#m').val());
       (0, _jquery2.default)('#m').val('');
+    }
+  }, {
+    key: 'isTyping',
+    value: function isTyping(e) {
+      if (e.target.value.length > 0) {
+        this.setState({
+          isTyping: true
+        });
+      } else {
+        this.setState({
+          isTyping: false
+        });
+      }
     }
   }, {
     key: 'render',
@@ -1023,8 +1043,8 @@ var App = function (_React$Component) {
           _react2.default.createElement(
             'form',
             { style: { "background": "#000", "padding": "3px", "position": "fixed", "bottom": 0, "width": "50%" }, action: '' },
-            _react2.default.createElement(_Messages2.default, { AllMessages: this.state.messages }),
-            _react2.default.createElement('input', { id: 'm', className: 'form-control', type: 'text', placeholder: 'Your message here...', autoComplete: 'off' }),
+            _react2.default.createElement(_Messages2.default, { AllMessages: this.state.messages, IsTyping: this.state.isTyping }),
+            _react2.default.createElement('input', { onChange: this.isTyping, id: 'm', className: 'form-control', type: 'text', placeholder: 'Your message here...', autoComplete: 'off' }),
             _react2.default.createElement(
               'button',
               { onClick: this.handleClick, type: 'button', className: 'btn btn-primary' },
@@ -18360,6 +18380,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
@@ -18370,15 +18392,52 @@ var _MessageItem2 = _interopRequireDefault(_MessageItem);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Messages = function Messages(props) {
-  return _react2.default.createElement(
-    'div',
-    null,
-    props.AllMessages.map(function (item, index) {
-      return _react2.default.createElement(_MessageItem2.default, { message: item, key: index });
-    })
-  );
-};
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Messages = function (_React$Component) {
+  _inherits(Messages, _React$Component);
+
+  function Messages(props) {
+    _classCallCheck(this, Messages);
+
+    var _this = _possibleConstructorReturn(this, (Messages.__proto__ || Object.getPrototypeOf(Messages)).call(this, props));
+
+    _this.state = {
+      messages: []
+    };
+    return _this;
+  }
+
+  _createClass(Messages, [{
+    key: 'render',
+    value: function render() {
+      console.log('console.log this.props in Messages.jsx', this.props);
+      return _react2.default.createElement(
+        'div',
+        null,
+        this.props.AllMessages.map(function (item, index) {
+          console.log('map is running in Messages.jsx');
+          return _react2.default.createElement(_MessageItem2.default, { message: item, key: index });
+        }),
+        this.props.IsTyping ? _react2.default.createElement(
+          'div',
+          null,
+          _react2.default.createElement(
+            'li',
+            { className: 'list-group-item', style: { "padding": "5px 10px" } },
+            'A user is typing...'
+          )
+        ) : null
+      );
+    }
+  }]);
+
+  return Messages;
+}(_react2.default.Component);
 
 exports.default = Messages;
 
@@ -28680,6 +28739,37 @@ if ( !noGlobal ) {
 return jQuery;
 } );
 
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var UserTyping = function UserTyping(props) {
+  return _react2.default.createElement(
+    'div',
+    null,
+    _react2.default.createElement(
+      'li',
+      null,
+      'this.props.TypingMessage'
+    )
+  );
+};
+
+exports.default = UserTyping;
 
 /***/ })
 /******/ ]);
